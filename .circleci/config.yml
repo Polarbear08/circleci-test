@@ -1,8 +1,19 @@
 version: 2.1
+
+workflows:
+  my-workflow:
+    jobs:
+      - build:
+          context:
+            - build-env-vars
+            - docker-hub-creds
 jobs:
   build:
     docker:
       - image: circleci/node:4.8.2
+        auth:
+          username: polarbear08
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - run: echo "hello world!"
