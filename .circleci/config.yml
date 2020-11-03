@@ -3,11 +3,12 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/node:4.8.2
-        auth:
-          username: polarbear08
-          password: $DOCKERHUB_PASSWORD
+      - image: circleci/node:12.19.0
+        # auth:
+        #   username: polarbear08
+        #   password: $DOCKERHUB_PASSWORD
     resource_class: small
     steps:
       - checkout
-      - run: echo "hello world!"
+      - run: TOKEN=$(curl "https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull" | jq -r .token)
+      - run: "curl -v --head -H \"Authorization: Bearer $TOKEN\" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest 2>&1 | grep RateLimit"
