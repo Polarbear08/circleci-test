@@ -1,7 +1,7 @@
 version: 2.1
 
 workflows:
-  my-workflow:
+  workflow:
     jobs:
       - build:
           context:
@@ -17,4 +17,11 @@ jobs:
     steps:
       - checkout
       # - run: TOKEN=$(curl "https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull" | jq -r .token)
-      - run: "curl -v -H \"Authorization: Bearer `curl 'https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull' | jq -r .token`\" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest 2>&1 | grep RateLimit"
+      - run: 
+          name: Check rate limits with Circle CI credentials
+          command: |
+            "curl -v -H \"Authorization: Bearer `curl 'https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull' | jq -r .token`\" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest 2>&1 | grep RateLimit"
+      - run:
+          name: Check rate limits with my own credentials
+          command: |
+            "curl --user \"$DOCKERHUB_USERNAME:$DOCKERHUB_PASSWORD\" -v -H \"Authorization: Bearer `curl 'https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull' | jq -r .token`\" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest 2>&1 | grep RateLimit"
