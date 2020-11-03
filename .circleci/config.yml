@@ -1,12 +1,18 @@
 version: 2.1
 
+workflows:
+  my-workflow:
+    jobs:
+      - build:
+          context:
+            - dockerhub-context
 jobs:
   build:
     docker:
-      - image: circleci/node:12.19.0
-        # auth:
-        #   username: polarbear08
-        #   password: $DOCKERHUB_PASSWORD
+      - image: circleci/node:latest
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     resource_class: small
     steps:
       - checkout
